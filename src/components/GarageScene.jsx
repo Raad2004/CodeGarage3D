@@ -191,8 +191,17 @@ const SimpleCar = ({ position, color, project, onClick }) => {
       <pointLight 
         position={[0, -0.1, 0]}
         color={color}
-        intensity={0.3}
-        distance={4}
+        intensity={0.6}
+        distance={5}
+        decay={2}
+      />
+      
+      {/* Additional car showcase lighting */}
+      <pointLight 
+        position={[0, 3, 2]}
+        color="#ffffff"
+        intensity={0.4}
+        distance={6}
         decay={2}
       />
     </group>
@@ -378,25 +387,25 @@ const GarageEnvironment = ({ doorOpen, onDoorToggle }) => {
       <mesh position={[-6, 7.8, 0]}>
         <boxGeometry args={[3, 0.1, 0.8]} />
         <meshStandardMaterial 
-          color="#f0f0f0" 
+          color="#ffffff" 
           emissive="#ffffff"
-          emissiveIntensity={0.2}
+          emissiveIntensity={0.4}
         />
       </mesh>
       <mesh position={[6, 7.8, 0]}>
         <boxGeometry args={[3, 0.1, 0.8]} />
         <meshStandardMaterial 
-          color="#f0f0f0" 
+          color="#ffffff" 
           emissive="#ffffff"
-          emissiveIntensity={0.2}
+          emissiveIntensity={0.4}
         />
       </mesh>
       <mesh position={[0, 7.8, -3]}>
         <boxGeometry args={[3, 0.1, 0.8]} />
         <meshStandardMaterial 
-          color="#f0f0f0" 
+          color="#ffffff" 
           emissive="#ffffff"
-          emissiveIntensity={0.2}
+          emissiveIntensity={0.4}
         />
       </mesh>
       
@@ -411,9 +420,7 @@ const GarageScene = ({ onCarClick }) => {
   const [garageDoorOpen, setGarageDoorOpen] = useState(false)
 
   const handleDoorToggle = () => {
-    console.log('Door toggle clicked! Current state:', garageDoorOpen)
     setGarageDoorOpen(!garageDoorOpen)
-    console.log('Door state will change to:', !garageDoorOpen)
   }
 
   return (
@@ -426,10 +433,6 @@ const GarageScene = ({ onCarClick }) => {
         >
           🏠 {garageDoorOpen ? 'CLOSE GARAGE' : 'OPEN GARAGE'}
         </button>
-        {/* Debug info */}
-        <div className="text-white text-xs mt-2">
-          Door State: {garageDoorOpen ? 'OPEN' : 'CLOSED'}
-        </div>
       </div>
       
       <Canvas
@@ -440,55 +443,118 @@ const GarageScene = ({ onCarClick }) => {
           gl.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         }}
       >
-        {/* Professional Lighting Setup */}
-        <ambientLight intensity={0.25} color="#404080" />
+        {/* Enhanced Lighting System */}
         
-        {/* Main directional light */}
-        <directionalLight 
-          position={[10, 12, 8]} 
-          intensity={0.8}
+        {/* Base Ambient Light */}
+        <ambientLight intensity={0.4} color="#6080ff" />
+        
+        {/* Main Garage Ceiling Lights */}
+        <spotLight 
+          position={[-8, 7.5, -1]} 
+          intensity={2.5}
+          angle={0.8}
+          penumbra={0.3}
           color="#ffffff"
           castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          shadow-camera-far={30}
-          shadow-camera-left={-15}
-          shadow-camera-right={15}
-          shadow-camera-top={15}
-          shadow-camera-bottom={-15}
-        />
-        
-        {/* Ceiling spot lights */}
-        <spotLight 
-          position={[-6, 7.5, 0]} 
-          intensity={1.2}
-          angle={0.6}
-          penumbra={0.5}
-          color="#f8f8ff"
-          castShadow
+          target-position={[-4, 0, -2]}
         />
         <spotLight 
-          position={[6, 7.5, 0]} 
-          intensity={1.2}
-          angle={0.6}
-          penumbra={0.5}
-          color="#f8f8ff"
-          castShadow
-        />
-        <spotLight 
-          position={[0, 7.5, -3]} 
-          intensity={1.0}
+          position={[0, 7.5, -1]} 
+          intensity={2.5}
           angle={0.8}
-          penumbra={0.5}
-          color="#f8f8ff"
+          penumbra={0.3}
+          color="#ffffff"
+          castShadow
+          target-position={[0, 0, -2]}
+        />
+        <spotLight 
+          position={[8, 7.5, -1]} 
+          intensity={2.5}
+          angle={0.8}
+          penumbra={0.3}
+          color="#ffffff"
+          castShadow
+          target-position={[4, 0, -2]}
         />
         
-        {/* Fill light */}
+        {/* Garage Entry Light */}
+        <spotLight 
+          position={[0, 6, 4]} 
+          intensity={1.8}
+          angle={1.2}
+          penumbra={0.4}
+          color="#f8f8ff"
+          target-position={[0, 0, 0]}
+        />
+        
+        {/* Outdoor Daylight (when garage door is open) */}
+        {garageDoorOpen && (
+          <>
+            <directionalLight 
+              position={[0, 10, 15]} 
+              intensity={1.5}
+              color="#ffffff"
+              castShadow
+              shadow-mapSize-width={2048}
+              shadow-mapSize-height={2048}
+              shadow-camera-far={30}
+              shadow-camera-left={-15}
+              shadow-camera-right={15}
+              shadow-camera-top={15}
+              shadow-camera-bottom={-15}
+            />
+            
+            {/* Outdoor Fill Light */}
+            <pointLight 
+              position={[0, 8, 12]} 
+              intensity={1.2}
+              color="#87ceeb"
+              distance={25}
+              decay={1.5}
+            />
+            
+            {/* Simulated Sky Light */}
+            <pointLight 
+              position={[-10, 12, 10]} 
+              intensity={0.8}
+              color="#e0f6ff"
+              distance={30}
+              decay={2}
+            />
+            <pointLight 
+              position={[10, 12, 10]} 
+              intensity={0.8}
+              color="#e0f6ff"
+              distance={30}
+              decay={2}
+            />
+          </>
+        )}
+        
+        {/* Floor Illumination Lights */}
         <pointLight 
-          position={[0, 6, 6]} 
-          intensity={0.3}
-          color="#6080ff"
-          distance={20}
+          position={[-6, 2, 2]} 
+          intensity={0.8}
+          color="#ffffff"
+          distance={8}
+          decay={2}
+        />
+        <pointLight 
+          position={[6, 2, 2]} 
+          intensity={0.8}
+          color="#ffffff"
+          distance={8}
+          decay={2}
+        />
+        
+        {/* Back Wall Wash Light */}
+        <spotLight 
+          position={[0, 4, -6]} 
+          intensity={1.0}
+          angle={1.5}
+          penumbra={0.8}
+          color="#4080ff"
+          target-position={[0, 4, -7.5]}
         />
         
         {/* Garage Environment with Door */}
