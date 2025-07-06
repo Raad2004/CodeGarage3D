@@ -3,6 +3,25 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Text } from '@react-three/drei'
 import { projects } from '../data/projects'
 
+// Simple Test Box Component
+const TestBox = ({ position, color }) => {
+  const meshRef = useRef()
+  
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x += 0.01
+      meshRef.current.rotation.y += 0.01
+    }
+  })
+
+  return (
+    <mesh ref={meshRef} position={position}>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  )
+}
+
 // Simple 3D Car Model Component with Headlights and Animations
 const SimpleCar = ({ position, color, project, onClick }) => {
   const carRef = useRef()
@@ -279,57 +298,88 @@ const GarageEnvironment = () => {
 
 // Main Garage Scene Component
 const GarageScene = ({ onCarClick }) => {
+  const [testMode, setTestMode] = useState(true)
+
+  if (testMode) {
+    return (
+      <div className="w-full h-full bg-gray-900 relative">
+        <div className="absolute top-4 left-4 z-10">
+          <button 
+            onClick={() => setTestMode(false)}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Switch to Full Scene
+          </button>
+        </div>
+        
+        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 5]} intensity={0.5} />
+          
+          <TestBox position={[-2, 0, 0]} color="red" />
+          <TestBox position={[0, 0, 0]} color="green" />
+          <TestBox position={[2, 0, 0]} color="blue" />
+          
+          <OrbitControls />
+        </Canvas>
+        
+        <div className="absolute bottom-4 left-4 text-white">
+          <p>Test Mode: If you see spinning cubes, Three.js is working!</p>
+          <p>Red = {projects[0].name}</p>
+          <p>Green = {projects[1].name}</p>
+          <p>Blue = {projects[2].name}</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Full scene (original complex version)
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full bg-gray-900 relative">
+      <div className="absolute top-4 left-4 z-10">
+        <button 
+          onClick={() => setTestMode(true)}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Switch to Test Mode
+        </button>
+      </div>
+      
       <Canvas
         camera={{ position: [0, 8, 15], fov: 75 }}
         style={{ background: '#111' }}
-        shadows
       >
-        {/* Enhanced Lighting */}
-        <ambientLight intensity={0.2} />
-        <directionalLight 
-          position={[10, 10, 5]} 
-          intensity={0.8}
-          castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-        />
-        <pointLight position={[0, 8, 0]} intensity={0.3} />
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[10, 10, 5]} intensity={0.8} />
         
-        {/* Garage Environment */}
-        <GarageEnvironment />
+        {/* Simple cars instead of complex ones */}
+        <mesh position={[-6, 0, -2]} onClick={() => onCarClick(projects[0])}>
+          <boxGeometry args={[4, 1, 2]} />
+          <meshStandardMaterial color={projects[0].color} />
+        </mesh>
         
-        {/* Cars positioned in the garage */}
-        <SimpleCar 
-          position={[-6, 0, -2]} 
-          color={projects[0].color} 
-          project={projects[0]} 
-          onClick={onCarClick} 
-        />
-        <SimpleCar 
-          position={[0, 0, -2]} 
-          color={projects[1].color} 
-          project={projects[1]} 
-          onClick={onCarClick} 
-        />
-        <SimpleCar 
-          position={[6, 0, -2]} 
-          color={projects[2].color} 
-          project={projects[2]} 
-          onClick={onCarClick} 
-        />
+        <mesh position={[0, 0, -2]} onClick={() => onCarClick(projects[1])}>
+          <boxGeometry args={[4, 1, 2]} />
+          <meshStandardMaterial color={projects[1].color} />
+        </mesh>
         
-        {/* Camera Controls */}
-        <OrbitControls 
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={true}
-          maxPolarAngle={Math.PI / 2}
-          minDistance={5}
-          maxDistance={25}
-        />
+        <mesh position={[6, 0, -2]} onClick={() => onCarClick(projects[2])}>
+          <boxGeometry args={[4, 1, 2]} />
+          <meshStandardMaterial color={projects[2].color} />
+        </mesh>
+        
+        {/* Simple floor */}
+        <mesh position={[0, -1, 0]}>
+          <boxGeometry args={[20, 0.1, 10]} />
+          <meshStandardMaterial color="#444" />
+        </mesh>
+        
+        <OrbitControls />
       </Canvas>
+      
+      <div className="absolute bottom-4 left-4 text-white">
+        <p>Full Scene Mode - Click cars to view projects</p>
+      </div>
     </div>
   )
 }
