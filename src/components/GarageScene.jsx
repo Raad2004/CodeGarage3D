@@ -201,85 +201,104 @@ const SimpleCar = ({ position, color, project, onClick }) => {
 
 // Animated Garage Door Component
 const AnimatedGarageDoor = ({ isOpen, onToggle }) => {
-  const doorRef = useRef()
-  const [targetY, setTargetY] = useState(isOpen ? 7 : 0)
+  const doorGroupRef = useRef()
   
   // Animate door movement
   useFrame(() => {
-    if (doorRef.current) {
-      const newTargetY = isOpen ? 7 : 0
-      if (newTargetY !== targetY) {
-        setTargetY(newTargetY)
-      }
+    if (doorGroupRef.current) {
+      const targetY = isOpen ? 6.5 : 0
+      const currentY = doorGroupRef.current.position.y
+      const diff = targetY - currentY
       
       // Smooth animation
-      const currentY = doorRef.current.position.y
-      const diff = targetY - currentY
-      if (Math.abs(diff) > 0.01) {
-        doorRef.current.position.y += diff * 0.08
+      if (Math.abs(diff) > 0.02) {
+        doorGroupRef.current.position.y += diff * 0.06
       }
     }
   })
 
   return (
     <group>
-      {/* Garage Door */}
-      <mesh 
-        ref={doorRef}
-        position={[0, 0, 7.4]} 
-        onClick={onToggle}
-        onPointerOver={() => {
-          document.body.style.cursor = 'pointer'
-        }}
-        onPointerOut={() => {
-          document.body.style.cursor = 'default'
-        }}
-      >
-        <boxGeometry args={[20, 6, 0.3]} />
-        <meshStandardMaterial 
-          color="#4a5568"
-          metalness={0.3}
-          roughness={0.7}
-        />
-      </mesh>
+      {/* Main Door Group - Everything moves together */}
+      <group ref={doorGroupRef} position={[0, 0, 0]}>
+        {/* Main Garage Door */}
+        <mesh 
+          position={[0, 3, 7.4]} 
+          onClick={(e) => {
+            e.stopPropagation()
+            onToggle()
+          }}
+          onPointerOver={() => {
+            document.body.style.cursor = 'pointer'
+          }}
+          onPointerOut={() => {
+            document.body.style.cursor = 'default'
+          }}
+        >
+          <boxGeometry args={[20, 6, 0.3]} />
+          <meshStandardMaterial 
+            color="#4a5568"
+            metalness={0.3}
+            roughness={0.7}
+          />
+        </mesh>
+        
+        {/* Door Panels (for realism) */}
+        <mesh position={[0, 1, 7.35]}>
+          <boxGeometry args={[18, 1, 0.1]} />
+          <meshStandardMaterial color="#2d3748" />
+        </mesh>
+        <mesh position={[0, 2.5, 7.35]}>
+          <boxGeometry args={[18, 1, 0.1]} />
+          <meshStandardMaterial color="#2d3748" />
+        </mesh>
+        <mesh position={[0, 4, 7.35]}>
+          <boxGeometry args={[18, 1, 0.1]} />
+          <meshStandardMaterial color="#2d3748" />
+        </mesh>
+        <mesh position={[0, 5.5, 7.35]}>
+          <boxGeometry args={[18, 1, 0.1]} />
+          <meshStandardMaterial color="#2d3748" />
+        </mesh>
+        
+        {/* Door Handle */}
+        <mesh position={[8, 2.5, 7.2]}>
+          <boxGeometry args={[0.3, 0.1, 0.1]} />
+          <meshStandardMaterial 
+            color="#ffd700"
+            metalness={0.9}
+            roughness={0.1}
+            emissive="#ffd700"
+            emissiveIntensity={0.1}
+          />
+        </mesh>
+        
+        {/* Door Window */}
+        <mesh position={[0, 4.5, 7.3]}>
+          <boxGeometry args={[8, 0.8, 0.05]} />
+          <meshStandardMaterial 
+            color="#001122"
+            transparent
+            opacity={0.3}
+            metalness={0.1}
+            roughness={0.1}
+          />
+        </mesh>
+      </group>
       
-      {/* Door Panels (for realism) */}
-      <mesh ref={doorRef} position={[0, 0, 7.35]}>
-        <boxGeometry args={[18, 1, 0.1]} />
-        <meshStandardMaterial color="#2d3748" />
-      </mesh>
-      <mesh ref={doorRef} position={[0, 1.5, 7.35]}>
-        <boxGeometry args={[18, 1, 0.1]} />
-        <meshStandardMaterial color="#2d3748" />
-      </mesh>
-      <mesh ref={doorRef} position={[0, 3, 7.35]}>
-        <boxGeometry args={[18, 1, 0.1]} />
-        <meshStandardMaterial color="#2d3748" />
-      </mesh>
-      <mesh ref={doorRef} position={[0, 4.5, 7.35]}>
-        <boxGeometry args={[18, 1, 0.1]} />
-        <meshStandardMaterial color="#2d3748" />
-      </mesh>
-      
-      {/* Door Handle */}
-      <mesh ref={doorRef} position={[8, 1.5, 7.2]}>
-        <boxGeometry args={[0.3, 0.1, 0.1]} />
-        <meshStandardMaterial 
-          color="#ffd700"
-          metalness={0.9}
-          roughness={0.1}
-          emissive="#ffd700"
-          emissiveIntensity={0.1}
-        />
-      </mesh>
-      
-      {/* Garage Door Tracks */}
+      {/* Door Tracks (static) */}
       <mesh position={[-10.5, 3, 7.5]}>
         <boxGeometry args={[0.2, 6, 0.2]} />
         <meshStandardMaterial color="#1a202c" />
       </mesh>
       <mesh position={[10.5, 3, 7.5]}>
         <boxGeometry args={[0.2, 6, 0.2]} />
+        <meshStandardMaterial color="#1a202c" />
+      </mesh>
+      
+      {/* Door frame */}
+      <mesh position={[0, 6.5, 7.6]}>
+        <boxGeometry args={[21, 0.3, 0.4]} />
         <meshStandardMaterial color="#1a202c" />
       </mesh>
     </group>
@@ -392,7 +411,9 @@ const GarageScene = ({ onCarClick }) => {
   const [garageDoorOpen, setGarageDoorOpen] = useState(false)
 
   const handleDoorToggle = () => {
+    console.log('Door toggle clicked! Current state:', garageDoorOpen)
     setGarageDoorOpen(!garageDoorOpen)
+    console.log('Door state will change to:', !garageDoorOpen)
   }
 
   return (
@@ -405,6 +426,10 @@ const GarageScene = ({ onCarClick }) => {
         >
           🏠 {garageDoorOpen ? 'CLOSE GARAGE' : 'OPEN GARAGE'}
         </button>
+        {/* Debug info */}
+        <div className="text-white text-xs mt-2">
+          Door State: {garageDoorOpen ? 'OPEN' : 'CLOSED'}
+        </div>
       </div>
       
       <Canvas
