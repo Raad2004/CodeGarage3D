@@ -22,7 +22,7 @@ const TestBox = ({ position, color }) => {
   )
 }
 
-// Enhanced Car Component with better materials
+// Safe Car Component with fallbacks
 const SimpleCar = ({ position, color, project, onClick }) => {
   const [hovered, setHovered] = useState(false)
 
@@ -39,224 +39,150 @@ const SimpleCar = ({ position, color, project, onClick }) => {
       onPointerOut={() => setHovered(false)}
     >
       {/* Car Body */}
-      <mesh position={[0, 0.5, 0]} castShadow>
+      <mesh position={[0, 0.5, 0]}>
         <boxGeometry args={[3, 0.8, 1.8]} />
         <meshStandardMaterial 
           color={hovered ? color : color} 
           emissive={hovered ? color : "#000000"}
-          emissiveIntensity={hovered ? 0.15 : 0}
-          metalness={0.4}
-          roughness={0.6}
-          envMapIntensity={0.8}
+          emissiveIntensity={hovered ? 0.1 : 0}
+          metalness={0.3}
+          roughness={0.7}
         />
       </mesh>
       
       {/* Car Roof */}
-      <mesh position={[0, 1.1, 0]} castShadow>
+      <mesh position={[0, 1.1, 0]}>
         <boxGeometry args={[2, 0.6, 1.6]} />
         <meshStandardMaterial 
           color={color}
           emissive={hovered ? color : "#000000"}
-          emissiveIntensity={hovered ? 0.1 : 0}
-          metalness={0.4}
-          roughness={0.6}
-          envMapIntensity={0.8}
+          emissiveIntensity={hovered ? 0.05 : 0}
+          metalness={0.3}
+          roughness={0.7}
         />
       </mesh>
       
-      {/* Windows */}
-      <mesh position={[0, 1.1, 0.9]}>
-        <boxGeometry args={[1.8, 0.5, 0.1]} />
+      {/* Simple Windows */}
+      <mesh position={[0, 1.1, 0.8]}>
+        <boxGeometry args={[1.8, 0.4, 0.05]} />
         <meshStandardMaterial 
-          color="#001122"
-          metalness={0.1}
-          roughness={0.1}
+          color="#003366"
           transparent
-          opacity={0.7}
+          opacity={0.6}
         />
       </mesh>
-      <mesh position={[0, 1.1, -0.9]}>
-        <boxGeometry args={[1.8, 0.5, 0.1]} />
+      <mesh position={[0, 1.1, -0.8]}>
+        <boxGeometry args={[1.8, 0.4, 0.05]} />
         <meshStandardMaterial 
-          color="#001122"
-          metalness={0.1}
-          roughness={0.1}
+          color="#003366"
           transparent
-          opacity={0.7}
+          opacity={0.6}
         />
       </mesh>
       
-      {/* Wheels with rims */}
-      <mesh position={[-1.2, 0, 1]} castShadow>
-        <cylinderGeometry args={[0.3, 0.3, 0.2, 12]} />
-        <meshStandardMaterial 
-          color="#111" 
-          metalness={0.8}
-          roughness={0.2}
-        />
-      </mesh>
+      {/* Wheels */}
       <mesh position={[-1.2, 0, 1]}>
-        <cylinderGeometry args={[0.2, 0.2, 0.25, 8]} />
+        <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
         <meshStandardMaterial 
-          color="#666" 
-          metalness={0.9}
-          roughness={0.1}
-        />
-      </mesh>
-      
-      <mesh position={[1.2, 0, 1]} castShadow>
-        <cylinderGeometry args={[0.3, 0.3, 0.2, 12]} />
-        <meshStandardMaterial 
-          color="#111" 
-          metalness={0.8}
-          roughness={0.2}
+          color="#222" 
+          metalness={0.6}
+          roughness={0.3}
         />
       </mesh>
       <mesh position={[1.2, 0, 1]}>
-        <cylinderGeometry args={[0.2, 0.2, 0.25, 8]} />
+        <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
         <meshStandardMaterial 
-          color="#666" 
-          metalness={0.9}
-          roughness={0.1}
-        />
-      </mesh>
-      
-      <mesh position={[-1.2, 0, -1]} castShadow>
-        <cylinderGeometry args={[0.3, 0.3, 0.2, 12]} />
-        <meshStandardMaterial 
-          color="#111" 
-          metalness={0.8}
-          roughness={0.2}
+          color="#222" 
+          metalness={0.6}
+          roughness={0.3}
         />
       </mesh>
       <mesh position={[-1.2, 0, -1]}>
-        <cylinderGeometry args={[0.2, 0.2, 0.25, 8]} />
+        <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
         <meshStandardMaterial 
-          color="#666" 
-          metalness={0.9}
-          roughness={0.1}
-        />
-      </mesh>
-      
-      <mesh position={[1.2, 0, -1]} castShadow>
-        <cylinderGeometry args={[0.3, 0.3, 0.2, 12]} />
-        <meshStandardMaterial 
-          color="#111" 
-          metalness={0.8}
-          roughness={0.2}
+          color="#222" 
+          metalness={0.6}
+          roughness={0.3}
         />
       </mesh>
       <mesh position={[1.2, 0, -1]}>
-        <cylinderGeometry args={[0.2, 0.2, 0.25, 8]} />
+        <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
         <meshStandardMaterial 
-          color="#666" 
-          metalness={0.9}
-          roughness={0.1}
+          color="#222" 
+          metalness={0.6}
+          roughness={0.3}
         />
       </mesh>
       
-      {/* Enhanced Headlights */}
+      {/* Headlights */}
       <mesh position={[-0.8, 0.5, 0.95]}>
-        <sphereGeometry args={[0.12, 12, 12]} />
+        <sphereGeometry args={[0.1, 8, 8]} />
         <meshStandardMaterial 
-          color={hovered ? "#ffffff" : "#e8e8e8"} 
+          color={hovered ? "#ffffff" : "#cccccc"} 
           emissive={hovered ? "#ffffff" : "#000000"}
-          emissiveIntensity={hovered ? 0.3 : 0}
-          metalness={0.9}
-          roughness={0.1}
+          emissiveIntensity={hovered ? 0.2 : 0}
         />
       </mesh>
       <mesh position={[0.8, 0.5, 0.95]}>
-        <sphereGeometry args={[0.12, 12, 12]} />
+        <sphereGeometry args={[0.1, 8, 8]} />
         <meshStandardMaterial 
-          color={hovered ? "#ffffff" : "#e8e8e8"} 
+          color={hovered ? "#ffffff" : "#cccccc"} 
           emissive={hovered ? "#ffffff" : "#000000"}
-          emissiveIntensity={hovered ? 0.3 : 0}
-          metalness={0.9}
-          roughness={0.1}
+          emissiveIntensity={hovered ? 0.2 : 0}
         />
       </mesh>
       
-      {/* Headlight glow effect when hovered */}
-      {hovered && (
-        <>
-          <pointLight 
-            position={[-0.8, 0.5, 1.5]}
-            color="#ffffff"
-            intensity={0.5}
-            distance={6}
-            decay={2}
-          />
-          <pointLight 
-            position={[0.8, 0.5, 1.5]}
-            color="#ffffff"
-            intensity={0.5}
-            distance={6}
-            decay={2}
-          />
-        </>
-      )}
-      
-      {/* Project Label */}
+      {/* Project Label - Fixed without font-weight */}
       <Text
         position={[0, 2.2, 0]}
         fontSize={0.35}
         color={hovered ? "#ffff00" : "#ffffff"}
         anchorX="center"
         anchorY="middle"
-        font-weight="bold"
       >
         {project.name}
       </Text>
-      
-      {/* Subtle car underlight for reflection effect */}
-      <pointLight 
-        position={[0, -0.2, 0]}
-        color={color}
-        intensity={0.2}
-        distance={3}
-        decay={2}
-      />
     </group>
   )
 }
 
-// Professional Garage Environment with Reflective Floor
-const GarageEnvironment = () => {
+// Safe Garage Environment
+const GarageEnvironment = ({ enableReflections = false }) => {
   return (
     <group>
-      {/* Reflective Floor - The Star of the Show! */}
-      <mesh position={[0, -0.51, 0]} receiveShadow>
-        <boxGeometry args={[25, 0.02, 15]} />
-        <MeshReflectorMaterial
-          blur={[300, 30]}
-          resolution={1024}
-          mixBlur={1}
-          mixStrength={50}
-          roughness={1}
-          depthScale={1.2}
-          minDepthThreshold={0.4}
-          maxDepthThreshold={1.4}
-          color="#202020"
-          metalness={0.8}
-        />
-      </mesh>
-      
-      {/* Floor Base */}
-      <mesh position={[0, -0.6, 0]}>
-        <boxGeometry args={[25, 0.1, 15]} />
-        <meshStandardMaterial 
-          color="#1a1a1a" 
-          metalness={0.2}
-          roughness={0.8}
-        />
-      </mesh>
+      {/* Floor - Reflective or Simple based on performance */}
+      {enableReflections ? (
+        <mesh position={[0, -0.51, 0]}>
+          <boxGeometry args={[25, 0.02, 15]} />
+          <MeshReflectorMaterial
+            blur={[100, 20]}
+            resolution={512}
+            mixBlur={0.5}
+            mixStrength={20}
+            roughness={0.8}
+            depthScale={1}
+            minDepthThreshold={0.5}
+            maxDepthThreshold={1.2}
+            color="#333"
+            metalness={0.5}
+          />
+        </mesh>
+      ) : (
+        <mesh position={[0, -0.5, 0]}>
+          <boxGeometry args={[25, 0.1, 15]} />
+          <meshStandardMaterial 
+            color="#333" 
+            metalness={0.2}
+            roughness={0.8}
+          />
+        </mesh>
+      )}
       
       {/* Back Wall */}
       <mesh position={[0, 4, -7.5]}>
         <boxGeometry args={[25, 8, 0.2]} />
         <meshStandardMaterial 
-          color="#2a2a2a" 
+          color="#555" 
           metalness={0.1}
           roughness={0.9}
         />
@@ -266,7 +192,7 @@ const GarageEnvironment = () => {
       <mesh position={[-12.5, 4, 0]}>
         <boxGeometry args={[0.2, 8, 15]} />
         <meshStandardMaterial 
-          color="#2a2a2a" 
+          color="#555" 
           metalness={0.1}
           roughness={0.9}
         />
@@ -274,7 +200,7 @@ const GarageEnvironment = () => {
       <mesh position={[12.5, 4, 0]}>
         <boxGeometry args={[0.2, 8, 15]} />
         <meshStandardMaterial 
-          color="#2a2a2a" 
+          color="#555" 
           metalness={0.1}
           roughness={0.9}
         />
@@ -284,45 +210,20 @@ const GarageEnvironment = () => {
       <mesh position={[0, 8, 0]}>
         <boxGeometry args={[25, 0.2, 15]} />
         <meshStandardMaterial 
-          color="#1a1a1a" 
+          color="#444" 
           metalness={0.1}
           roughness={0.9}
-        />
-      </mesh>
-      
-      {/* Garage Light Fixtures */}
-      <mesh position={[-6, 7.8, 0]}>
-        <boxGeometry args={[3, 0.1, 0.8]} />
-        <meshStandardMaterial 
-          color="#f0f0f0" 
-          emissive="#ffffff"
-          emissiveIntensity={0.2}
-        />
-      </mesh>
-      <mesh position={[6, 7.8, 0]}>
-        <boxGeometry args={[3, 0.1, 0.8]} />
-        <meshStandardMaterial 
-          color="#f0f0f0" 
-          emissive="#ffffff"
-          emissiveIntensity={0.2}
-        />
-      </mesh>
-      <mesh position={[0, 7.8, -3]}>
-        <boxGeometry args={[3, 0.1, 0.8]} />
-        <meshStandardMaterial 
-          color="#f0f0f0" 
-          emissive="#ffffff"
-          emissiveIntensity={0.2}
         />
       </mesh>
     </group>
   )
 }
 
-// Main Garage Scene Component
+// Main Garage Scene Component with Error Handling
 const GarageScene = ({ onCarClick }) => {
   const [testMode, setTestMode] = useState(false)
   const [sceneMode, setSceneMode] = useState('garage')
+  const [reflectionsEnabled, setReflectionsEnabled] = useState(false)
 
   if (testMode) {
     return (
@@ -354,7 +255,7 @@ const GarageScene = ({ onCarClick }) => {
     )
   }
 
-  // Professional Garage Scene
+  // Safe Garage Scene
   return (
     <div className="w-full h-full bg-gray-900 relative">
       <div className="absolute top-4 left-4 z-10">
@@ -366,73 +267,38 @@ const GarageScene = ({ onCarClick }) => {
         </button>
         <button 
           onClick={() => setSceneMode(sceneMode === 'simple' ? 'garage' : 'simple')}
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="bg-green-500 text-white px-4 py-2 rounded mr-2"
         >
-          {sceneMode === 'simple' ? 'Showroom Mode' : 'Simple Mode'}
+          {sceneMode === 'simple' ? 'Garage Mode' : 'Simple Mode'}
+        </button>
+        <button 
+          onClick={() => setReflectionsEnabled(!reflectionsEnabled)}
+          className="bg-purple-500 text-white px-4 py-2 rounded"
+        >
+          {reflectionsEnabled ? 'Disable Reflections' : 'Enable Reflections'}
         </button>
       </div>
       
       <Canvas
         camera={{ position: [0, 6, 12], fov: 75 }}
-        style={{ background: 'linear-gradient(to bottom, #1a1a2e, #16213e)' }}
-        shadows
+        style={{ background: '#222' }}
+        onCreated={({ gl }) => {
+          gl.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        }}
       >
-        {/* Professional Lighting Setup */}
-        <ambientLight intensity={0.25} color="#404080" />
-        
-        {/* Main directional light */}
+        {/* Safe Lighting Setup */}
+        <ambientLight intensity={0.4} />
         <directionalLight 
-          position={[10, 12, 8]} 
+          position={[10, 10, 5]} 
           intensity={0.8}
-          color="#ffffff"
-          castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          shadow-camera-far={30}
-          shadow-camera-left={-15}
-          shadow-camera-right={15}
-          shadow-camera-top={15}
-          shadow-camera-bottom={-15}
         />
-        
-        {/* Ceiling spot lights */}
-        <spotLight 
-          position={[-6, 7.5, 0]} 
-          intensity={1.2}
-          angle={0.6}
-          penumbra={0.5}
-          color="#f8f8ff"
-          castShadow
-        />
-        <spotLight 
-          position={[6, 7.5, 0]} 
-          intensity={1.2}
-          angle={0.6}
-          penumbra={0.5}
-          color="#f8f8ff"
-          castShadow
-        />
-        <spotLight 
-          position={[0, 7.5, -3]} 
-          intensity={1.0}
-          angle={0.8}
-          penumbra={0.5}
-          color="#f8f8ff"
-        />
-        
-        {/* Fill light */}
         <pointLight 
-          position={[0, 6, 6]} 
+          position={[0, 8, 0]} 
           intensity={0.3}
-          color="#6080ff"
-          distance={20}
         />
-        
-        {/* Environment for reflections */}
-        <Environment preset="warehouse" />
         
         {/* Environment */}
-        {sceneMode === 'garage' && <GarageEnvironment />}
+        {sceneMode === 'garage' && <GarageEnvironment enableReflections={reflectionsEnabled} />}
         
         {/* Cars */}
         {sceneMode === 'simple' ? (
@@ -452,7 +318,7 @@ const GarageScene = ({ onCarClick }) => {
             </mesh>
           </>
         ) : (
-          // Enhanced car models
+          // Car models
           <>
             <SimpleCar 
               position={[-4, 0, -2]} 
@@ -484,8 +350,8 @@ const GarageScene = ({ onCarClick }) => {
       </Canvas>
       
       <div className="absolute bottom-4 left-4 text-white">
-        <p>🏎️ {sceneMode === 'garage' ? 'Professional Showroom' : 'Simple Scene'} - Click cars to view projects</p>
-        <p>🪞 Notice the stunning floor reflections!</p>
+        <p>🏎️ {sceneMode === 'garage' ? 'Garage Scene' : 'Simple Scene'} - Click cars to view projects</p>
+        {reflectionsEnabled && <p>🪞 Reflections: ON</p>}
         <p>🖱️ Drag to rotate • Scroll to zoom</p>
       </div>
     </div>
