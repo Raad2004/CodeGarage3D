@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import './App.css'
 import GarageScene from './components/GarageScene'
-import CarModel from './components/CarModel'
 import ProjectModal from './components/ProjectModal'
-import { projects } from './data/projects'
 
 function App() {
   const [selectedProject, setSelectedProject] = useState(null)
@@ -22,34 +20,17 @@ function App() {
   return (
     <div className="w-full h-screen bg-black">
       {/* Header */}
-      <div className="text-white text-center py-8">
-        <h1 className="text-4xl font-bold mb-2">🏎️ Car Garage Portfolio</h1>
-        <p className="text-xl mb-2">Welcome to my 3D Interactive Portfolio</p>
-        <p className="text-gray-400">
-          Each car in the garage represents a project I've worked on
+      <div className="text-white text-center py-4">
+        <h1 className="text-3xl font-bold mb-1">🏎️ Car Garage Portfolio</h1>
+        <p className="text-lg mb-1">Welcome to my 3D Interactive Portfolio</p>
+        <p className="text-gray-400 text-sm">
+          Click on any car in the garage to view project details • Use mouse to navigate the 3D scene
         </p>
       </div>
 
-      {/* Main content area */}
-      <div className="flex h-5/6">
-        {/* Left side - Car list (temporary for testing) */}
-        <div className="w-1/3 p-4 bg-gray-800">
-          <h2 className="text-white text-xl font-bold mb-4">Projects (Cars)</h2>
-          <div className="space-y-4">
-            {projects.map((project) => (
-              <CarModel
-                key={project.id}
-                project={project}
-                onClick={handleCarClick}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Right side - 3D Scene */}
-        <div className="w-2/3">
-          <GarageScene />
-        </div>
+      {/* 3D Garage Scene */}
+      <div className="w-full" style={{ height: 'calc(100vh - 140px)' }}>
+        <GarageScene onCarClick={handleCarClick} />
       </div>
 
       {/* Project Modal */}
