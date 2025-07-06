@@ -1,7 +1,19 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, Suspense } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Text, MeshReflectorMaterial } from '@react-three/drei'
+import { OrbitControls, Text, MeshReflectorMaterial, Environment, CubeCamera, PerspectiveCamera } from '@react-three/drei'
+import { 
+  EffectComposer, 
+  Bloom, 
+  ChromaticAberration,
+  DepthOfField 
+} from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
 import { projects } from '../data/projects'
+import { RealisticCar } from './RealisticCar'
+import { EnhancedGround } from './EnhancedGround'
+import { FloatingGrid } from './FloatingGrid'
+import { GarageRings } from './GarageRings'
+import { ParticleEffects } from './ParticleEffects'
 
 // Enhanced Car Component
 const SimpleCar = ({ position, color, project, onClick }) => {
@@ -415,8 +427,132 @@ const GarageEnvironment = ({ doorOpen, onDoorToggle }) => {
   )
 }
 
-// Main Garage Scene Component
-const GarageScene = ({ onCarClick }) => {
+function GarageShow({ garageDoorOpen, onCarClick }) {
+  const [effectsEnabled, setEffectsEnabled] = useState(true)
+  const [particlesEnabled, setParticlesEnabled] = useState(true)
+  const [ringsEnabled, setRingsEnabled] = useState(true)
+  
+  return (
+    <>
+      <OrbitControls 
+        target={[0, 0.5, 0]}
+        maxPolarAngle={Math.PI / 2}
+        minDistance={4}
+        maxDistance={30}
+        enablePan={true}
+      />
+
+      <PerspectiveCamera makeDefault fov={65} position={[0, 8, 15]} />
+
+      <color args={[0.05, 0.05, 0.1]} attach="background" />
+
+      {/* Environment mapping for realistic reflections */}
+      <CubeCamera resolution={256} frames={Infinity}>
+        {(texture) => (
+          <Environment map={texture} />
+        )}
+      </CubeCamera>
+
+      {/* Enhanced Lighting System */}
+      <ambientLight intensity={0.3} color="#4080ff" />
+      
+      {/* Cinematic colored spotlights */}
+      <spotLight
+        color={[1, 0.25, 0.7]} // Pink
+        intensity={2.5}
+        angle={0.8}
+        penumbra={0.5}
+        position={[8, 7, 2]}
+        castShadow
+        shadow-bias={-0.0001}
+      />
+      <spotLight
+        color={[0.14, 0.5, 1]} // Blue
+        intensity={2.5}
+        angle={0.8}
+        penumbra={0.5}
+        position={[-8, 7, 2]}
+        castShadow
+        shadow-bias={-0.0001}
+      />
+      
+      {/* Main garage ceiling lights */}
+      <spotLight 
+        position={[0, 8, -1]} 
+        intensity={1.8}
+        angle={0.9}
+        penumbra={0.3}
+        color="#ffffff"
+        castShadow
+        target-position={[0, 0, -2]}
+      />
+      
+      {/* Outdoor daylight when door is open */}
+      {garageDoorOpen && (
+        <directionalLight 
+          position={[0, 12, 18]} 
+          intensity={1.2}
+          color="#ffffff"
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+        />
+      )}
+
+      {/* Garage Environment */}
+      <GarageEnvironment doorOpen={garageDoorOpen} />
+      
+      {/* Enhanced Ground with texture mapping */}
+      <EnhancedGround />
+      
+      {/* Realistic Car Models */}
+      <RealisticCar 
+        position={[-4, 0, -2]} 
+        project={projects[0]} 
+        onClick={onCarClick}
+        baseColor={projects[0].color}
+      />
+      <RealisticCar 
+        position={[0, 0, -2]} 
+        project={projects[1]} 
+        onClick={onCarClick}
+        baseColor={projects[1].color}
+      />
+      <RealisticCar 
+        position={[4, 0, -2]} 
+        project={projects[2]} 
+        onClick={onCarClick}
+        baseColor={projects[2].color}
+      />
+      
+      {/* Visual Effects */}
+      <FloatingGrid visible={effectsEnabled} />
+      <GarageRings visible={ringsEnabled} intensity={0.3} />
+      <ParticleEffects visible={particlesEnabled} count={20} />
+      
+      {/* Post-processing Effects */}
+      <EffectComposer>
+        <Bloom
+          blendFunction={BlendFunction.ADD}
+          intensity={0.8}
+          width={300}
+          height={300}
+          kernelSize={5}
+          luminanceThreshold={0.2}
+          luminanceSmoothing={0.025}
+        />
+        <ChromaticAberration
+          blendFunction={BlendFunction.NORMAL}
+          offset={[0.0003, 0.0008]}
+        />
+        {/* Uncomment for depth of field effect */}
+        {/* <DepthOfField focusDistance={0.004} focalLength={0.02} bokehScale={2} height={480} /> */}
+      </EffectComposer>
+    </>
+  )
+}
+
+export function GarageScene({ onCarClick }) {
   const [garageDoorOpen, setGarageDoorOpen] = useState(false)
 
   const handleDoorToggle = () => {
@@ -424,178 +560,34 @@ const GarageScene = ({ onCarClick }) => {
   }
 
   return (
-    <div className="w-full h-full bg-gray-900 relative">
-      {/* Garage Door Remote Control */}
-      <div className="absolute top-4 left-4 z-10">
-        <button 
-          onClick={handleDoorToggle}
-          className="bg-yellow-500 text-black px-6 py-3 rounded-lg font-bold shadow-lg hover:bg-yellow-400 transition-colors"
+    <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 1000 }}>
+        <div className="bg-black bg-opacity-50 rounded-lg p-4">
+          <button 
+            onClick={handleDoorToggle}
+            className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+          >
+            🏠 {garageDoorOpen ? 'CLOSE GARAGE' : 'OPEN GARAGE'}
+          </button>
+        </div>
+      </div>
+
+      <Suspense fallback={
+        <div className="flex items-center justify-center h-full">
+          <div className="text-white text-xl">Loading garage...</div>
+        </div>
+      }>
+        <Canvas
+          camera={{ position: [0, 6, 12], fov: 75 }}
+          style={{ background: 'linear-gradient(to bottom, #1a1a2e, #16213e)' }}
+          shadows
+          onCreated={({ gl }) => {
+            gl.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+          }}
         >
-          🏠 {garageDoorOpen ? 'CLOSE GARAGE' : 'OPEN GARAGE'}
-        </button>
-      </div>
-      
-      <Canvas
-        camera={{ position: [0, 6, 12], fov: 75 }}
-        style={{ background: 'linear-gradient(to bottom, #1a1a2e, #16213e)' }}
-        shadows
-        onCreated={({ gl }) => {
-          gl.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-        }}
-      >
-        {/* Enhanced Lighting System */}
-        
-        {/* Base Ambient Light */}
-        <ambientLight intensity={0.4} color="#6080ff" />
-        
-        {/* Main Garage Ceiling Lights */}
-        <spotLight 
-          position={[-8, 7.5, -1]} 
-          intensity={2.5}
-          angle={0.8}
-          penumbra={0.3}
-          color="#ffffff"
-          castShadow
-          target-position={[-4, 0, -2]}
-        />
-        <spotLight 
-          position={[0, 7.5, -1]} 
-          intensity={2.5}
-          angle={0.8}
-          penumbra={0.3}
-          color="#ffffff"
-          castShadow
-          target-position={[0, 0, -2]}
-        />
-        <spotLight 
-          position={[8, 7.5, -1]} 
-          intensity={2.5}
-          angle={0.8}
-          penumbra={0.3}
-          color="#ffffff"
-          castShadow
-          target-position={[4, 0, -2]}
-        />
-        
-        {/* Garage Entry Light */}
-        <spotLight 
-          position={[0, 6, 4]} 
-          intensity={1.8}
-          angle={1.2}
-          penumbra={0.4}
-          color="#f8f8ff"
-          target-position={[0, 0, 0]}
-        />
-        
-        {/* Outdoor Daylight (when garage door is open) */}
-        {garageDoorOpen && (
-          <>
-            <directionalLight 
-              position={[0, 10, 15]} 
-              intensity={1.5}
-              color="#ffffff"
-              castShadow
-              shadow-mapSize-width={2048}
-              shadow-mapSize-height={2048}
-              shadow-camera-far={30}
-              shadow-camera-left={-15}
-              shadow-camera-right={15}
-              shadow-camera-top={15}
-              shadow-camera-bottom={-15}
-            />
-            
-            {/* Outdoor Fill Light */}
-            <pointLight 
-              position={[0, 8, 12]} 
-              intensity={1.2}
-              color="#87ceeb"
-              distance={25}
-              decay={1.5}
-            />
-            
-            {/* Simulated Sky Light */}
-            <pointLight 
-              position={[-10, 12, 10]} 
-              intensity={0.8}
-              color="#e0f6ff"
-              distance={30}
-              decay={2}
-            />
-            <pointLight 
-              position={[10, 12, 10]} 
-              intensity={0.8}
-              color="#e0f6ff"
-              distance={30}
-              decay={2}
-            />
-          </>
-        )}
-        
-        {/* Floor Illumination Lights */}
-        <pointLight 
-          position={[-6, 2, 2]} 
-          intensity={0.8}
-          color="#ffffff"
-          distance={8}
-          decay={2}
-        />
-        <pointLight 
-          position={[6, 2, 2]} 
-          intensity={0.8}
-          color="#ffffff"
-          distance={8}
-          decay={2}
-        />
-        
-        {/* Back Wall Wash Light */}
-        <spotLight 
-          position={[0, 4, -6]} 
-          intensity={1.0}
-          angle={1.5}
-          penumbra={0.8}
-          color="#4080ff"
-          target-position={[0, 4, -7.5]}
-        />
-        
-        {/* Garage Environment with Door */}
-        <GarageEnvironment doorOpen={garageDoorOpen} onDoorToggle={handleDoorToggle} />
-        
-        {/* Enhanced Car Models */}
-        <SimpleCar 
-          position={[-4, 0, -2]} 
-          color={projects[0].color} 
-          project={projects[0]} 
-          onClick={onCarClick} 
-        />
-        <SimpleCar 
-          position={[0, 0, -2]} 
-          color={projects[1].color} 
-          project={projects[1]} 
-          onClick={onCarClick} 
-        />
-        <SimpleCar 
-          position={[4, 0, -2]} 
-          color={projects[2].color} 
-          project={projects[2]} 
-          onClick={onCarClick} 
-        />
-        
-        <OrbitControls 
-          maxPolarAngle={Math.PI / 2}
-          minDistance={4}
-          maxDistance={25}
-          enablePan={true}
-        />
-      </Canvas>
-      
-      <div className="absolute bottom-4 left-4 text-white">
-        <p>🏎️ Professional Car Showroom - Click cars to view projects</p>
-        <p>🚪 Click the garage door or remote to open/close</p>
-        <p>🪞 Stunning floor reflections enabled</p>
-        <p>🖱️ Drag to rotate • Scroll to zoom</p>
-      </div>
+          <GarageShow garageDoorOpen={garageDoorOpen} onCarClick={onCarClick} />
+        </Canvas>
+      </Suspense>
     </div>
   )
-}
-
-export default GarageScene 
+} 
