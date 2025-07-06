@@ -22,275 +22,122 @@ const TestBox = ({ position, color }) => {
   )
 }
 
-// Simple 3D Car Model Component with Headlights and Animations
+// Optimized Car Component
 const SimpleCar = ({ position, color, project, onClick }) => {
-  const carRef = useRef()
   const [hovered, setHovered] = useState(false)
-  const [bounceOffset, setBounceOffset] = useState(0)
-  
-  // Animation loop for hover bounce effect
-  useFrame((state) => {
-    if (hovered && carRef.current) {
-      // Smooth bounce animation
-      const time = state.clock.getElapsedTime()
-      const bounce = Math.sin(time * 8) * 0.1 + 0.1
-      setBounceOffset(bounce)
-      
-      // Apply bounce to car position
-      carRef.current.position.y = position[1] + bounce
-      
-      // Subtle rotation wobble
-      carRef.current.rotation.y = Math.sin(time * 4) * 0.02
-    } else if (carRef.current) {
-      // Return to normal position smoothly
-      carRef.current.position.y = position[1]
-      carRef.current.rotation.y = 0
-    }
-  })
 
   const handleClick = (e) => {
     e.stopPropagation()
     onClick(project)
   }
 
-  const handlePointerOver = (e) => {
-    e.stopPropagation()
-    setHovered(true)
-    document.body.style.cursor = 'pointer'
-  }
-
-  const handlePointerOut = (e) => {
-    e.stopPropagation()
-    setHovered(false)
-    document.body.style.cursor = 'default'
-  }
-
   return (
     <group 
-      ref={carRef} 
       position={position} 
       onClick={handleClick}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
     >
       {/* Car Body */}
-      <mesh position={[0, 0.5, 0]} castShadow>
-        <boxGeometry args={[4, 1, 2]} />
+      <mesh position={[0, 0.5, 0]}>
+        <boxGeometry args={[3, 0.8, 1.8]} />
         <meshStandardMaterial 
-          color={color} 
-          metalness={0.3}
-          roughness={0.7}
+          color={hovered ? color : color} 
+          emissive={hovered ? color : "#000000"}
+          emissiveIntensity={hovered ? 0.1 : 0}
         />
       </mesh>
       
       {/* Car Roof */}
-      <mesh position={[0, 1.25, 0]} castShadow>
-        <boxGeometry args={[2.5, 0.8, 1.8]} />
+      <mesh position={[0, 1.1, 0]}>
+        <boxGeometry args={[2, 0.6, 1.6]} />
         <meshStandardMaterial 
-          color={color} 
-          metalness={0.3}
-          roughness={0.7}
+          color={color}
+          emissive={hovered ? color : "#000000"}
+          emissiveIntensity={hovered ? 0.05 : 0}
         />
       </mesh>
       
       {/* Wheels */}
-      <mesh position={[-1.5, 0, 1.2]} castShadow>
-        <cylinderGeometry args={[0.4, 0.4, 0.2, 16]} />
-        <meshStandardMaterial 
-          color="#333" 
-          metalness={0.8}
-          roughness={0.2}
-        />
+      <mesh position={[-1.2, 0, 1]}>
+        <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
+        <meshStandardMaterial color="#222" />
       </mesh>
-      <mesh position={[1.5, 0, 1.2]} castShadow>
-        <cylinderGeometry args={[0.4, 0.4, 0.2, 16]} />
-        <meshStandardMaterial 
-          color="#333" 
-          metalness={0.8}
-          roughness={0.2}
-        />
+      <mesh position={[1.2, 0, 1]}>
+        <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
+        <meshStandardMaterial color="#222" />
       </mesh>
-      <mesh position={[-1.5, 0, -1.2]} castShadow>
-        <cylinderGeometry args={[0.4, 0.4, 0.2, 16]} />
-        <meshStandardMaterial 
-          color="#333" 
-          metalness={0.8}
-          roughness={0.2}
-        />
+      <mesh position={[-1.2, 0, -1]}>
+        <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
+        <meshStandardMaterial color="#222" />
       </mesh>
-      <mesh position={[1.5, 0, -1.2]} castShadow>
-        <cylinderGeometry args={[0.4, 0.4, 0.2, 16]} />
-        <meshStandardMaterial 
-          color="#333" 
-          metalness={0.8}
-          roughness={0.2}
-        />
+      <mesh position={[1.2, 0, -1]}>
+        <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
+        <meshStandardMaterial color="#222" />
       </mesh>
       
-      {/* Headlights */}
-      <mesh position={[-1.2, 0.6, 1.05]}>
-        <sphereGeometry args={[0.15, 16, 16]} />
+      {/* Simple Headlights */}
+      <mesh position={[-0.8, 0.5, 0.95]}>
+        <sphereGeometry args={[0.1, 8, 8]} />
         <meshStandardMaterial 
-          color={hovered ? "#ffffff" : "#e0e0e0"} 
+          color={hovered ? "#ffffff" : "#cccccc"} 
           emissive={hovered ? "#ffffff" : "#000000"}
-          emissiveIntensity={hovered ? 0.3 : 0}
-          metalness={0.9}
-          roughness={0.1}
+          emissiveIntensity={hovered ? 0.2 : 0}
         />
       </mesh>
-      <mesh position={[1.2, 0.6, 1.05]}>
-        <sphereGeometry args={[0.15, 16, 16]} />
+      <mesh position={[0.8, 0.5, 0.95]}>
+        <sphereGeometry args={[0.1, 8, 8]} />
         <meshStandardMaterial 
-          color={hovered ? "#ffffff" : "#e0e0e0"} 
+          color={hovered ? "#ffffff" : "#cccccc"} 
           emissive={hovered ? "#ffffff" : "#000000"}
-          emissiveIntensity={hovered ? 0.3 : 0}
-          metalness={0.9}
-          roughness={0.1}
+          emissiveIntensity={hovered ? 0.2 : 0}
         />
       </mesh>
       
-      {/* Headlight Beams (only visible when hovered) */}
-      {hovered && (
-        <>
-          <pointLight 
-            position={[-1.2, 0.6, 1.05]}
-            color="#ffffff"
-            intensity={0.8}
-            distance={8}
-            decay={2}
-          />
-          <pointLight 
-            position={[1.2, 0.6, 1.05]}
-            color="#ffffff"
-            intensity={0.8}
-            distance={8}
-            decay={2}
-          />
-          {/* Headlight cones for visual effect */}
-          <mesh position={[-1.2, 0.6, 2.5]}>
-            <coneGeometry args={[1.5, 3, 8]} />
-            <meshStandardMaterial 
-              color="#ffffff"
-              transparent
-              opacity={0.1}
-              emissive="#ffffff"
-              emissiveIntensity={0.05}
-            />
-          </mesh>
-          <mesh position={[1.2, 0.6, 2.5]}>
-            <coneGeometry args={[1.5, 3, 8]} />
-            <meshStandardMaterial 
-              color="#ffffff"
-              transparent
-              opacity={0.1}
-              emissive="#ffffff"
-              emissiveIntensity={0.05}
-            />
-          </mesh>
-        </>
-      )}
-      
-      {/* Car Label with enhanced visibility */}
+      {/* Project Label */}
       <Text
-        position={[0, 2.5, 0]}
-        fontSize={0.5}
+        position={[0, 2, 0]}
+        fontSize={0.3}
         color={hovered ? "#ffff00" : "#ffffff"}
         anchorX="center"
         anchorY="middle"
-        font="/fonts/Inter-Bold.woff"
-        outlineWidth={0.02}
-        outlineColor="#000000"
       >
         {project.name}
       </Text>
-      
-      {/* Hover Effect Glow */}
-      {hovered && (
-        <mesh position={[0, 0.5, 0]}>
-          <boxGeometry args={[4.2, 1.2, 2.2]} />
-          <meshStandardMaterial 
-            color={color}
-            transparent
-            opacity={0.2}
-            emissive={color}
-            emissiveIntensity={0.1}
-          />
-        </mesh>
-      )}
     </group>
   )
 }
 
-// Garage Environment Component with enhanced lighting
+// Simple Garage Environment
 const GarageEnvironment = () => {
   return (
     <group>
       {/* Floor */}
-      <mesh position={[0, -0.5, 0]} receiveShadow>
-        <boxGeometry args={[30, 0.1, 20]} />
-        <meshStandardMaterial 
-          color="#444" 
-          metalness={0.1}
-          roughness={0.9}
-        />
+      <mesh position={[0, -0.5, 0]}>
+        <boxGeometry args={[25, 0.1, 15]} />
+        <meshStandardMaterial color="#333" />
       </mesh>
       
       {/* Back Wall */}
-      <mesh position={[0, 5, -10]}>
-        <boxGeometry args={[30, 10, 0.5]} />
-        <meshStandardMaterial 
-          color="#666" 
-          metalness={0.05}
-          roughness={0.95}
-        />
+      <mesh position={[0, 4, -7.5]}>
+        <boxGeometry args={[25, 8, 0.2]} />
+        <meshStandardMaterial color="#555" />
       </mesh>
       
-      {/* Left Wall */}
-      <mesh position={[-15, 5, 0]}>
-        <boxGeometry args={[0.5, 10, 20]} />
-        <meshStandardMaterial 
-          color="#666" 
-          metalness={0.05}
-          roughness={0.95}
-        />
+      {/* Side Walls */}
+      <mesh position={[-12.5, 4, 0]}>
+        <boxGeometry args={[0.2, 8, 15]} />
+        <meshStandardMaterial color="#555" />
       </mesh>
-      
-      {/* Right Wall */}
-      <mesh position={[15, 5, 0]}>
-        <boxGeometry args={[0.5, 10, 20]} />
-        <meshStandardMaterial 
-          color="#666" 
-          metalness={0.05}
-          roughness={0.95}
-        />
+      <mesh position={[12.5, 4, 0]}>
+        <boxGeometry args={[0.2, 8, 15]} />
+        <meshStandardMaterial color="#555" />
       </mesh>
       
       {/* Ceiling */}
-      <mesh position={[0, 10, 0]}>
-        <boxGeometry args={[30, 0.5, 20]} />
-        <meshStandardMaterial 
-          color="#555" 
-          metalness={0.05}
-          roughness={0.95}
-        />
-      </mesh>
-      
-      {/* Garage Lighting Fixtures */}
-      <mesh position={[-5, 9.5, 0]}>
-        <boxGeometry args={[2, 0.2, 0.5]} />
-        <meshStandardMaterial 
-          color="#ddd" 
-          emissive="#ffffff"
-          emissiveIntensity={0.1}
-        />
-      </mesh>
-      <mesh position={[5, 9.5, 0]}>
-        <boxGeometry args={[2, 0.2, 0.5]} />
-        <meshStandardMaterial 
-          color="#ddd" 
-          emissive="#ffffff"
-          emissiveIntensity={0.1}
-        />
+      <mesh position={[0, 8, 0]}>
+        <boxGeometry args={[25, 0.2, 15]} />
+        <meshStandardMaterial color="#444" />
       </mesh>
     </group>
   )
@@ -298,7 +145,8 @@ const GarageEnvironment = () => {
 
 // Main Garage Scene Component
 const GarageScene = ({ onCarClick }) => {
-  const [testMode, setTestMode] = useState(true)
+  const [testMode, setTestMode] = useState(false) // Start with garage scene
+  const [sceneMode, setSceneMode] = useState('garage') // 'test', 'simple', 'garage'
 
   if (testMode) {
     return (
@@ -306,9 +154,9 @@ const GarageScene = ({ onCarClick }) => {
         <div className="absolute top-4 left-4 z-10">
           <button 
             onClick={() => setTestMode(false)}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
           >
-            Switch to Full Scene
+            Switch to Garage
           </button>
         </div>
         
@@ -324,61 +172,93 @@ const GarageScene = ({ onCarClick }) => {
         </Canvas>
         
         <div className="absolute bottom-4 left-4 text-white">
-          <p>Test Mode: If you see spinning cubes, Three.js is working!</p>
-          <p>Red = {projects[0].name}</p>
-          <p>Green = {projects[1].name}</p>
-          <p>Blue = {projects[2].name}</p>
+          <p>Test Mode: Spinning cubes to verify Three.js is working</p>
         </div>
       </div>
     )
   }
 
-  // Full scene (original complex version)
+  // Garage Scene
   return (
     <div className="w-full h-full bg-gray-900 relative">
       <div className="absolute top-4 left-4 z-10">
         <button 
           onClick={() => setTestMode(true)}
-          className="bg-red-500 text-white px-4 py-2 rounded"
+          className="bg-red-500 text-white px-4 py-2 rounded mr-2"
         >
-          Switch to Test Mode
+          Test Mode
+        </button>
+        <button 
+          onClick={() => setSceneMode(sceneMode === 'simple' ? 'garage' : 'simple')}
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          {sceneMode === 'simple' ? 'Garage View' : 'Simple View'}
         </button>
       </div>
       
       <Canvas
-        camera={{ position: [0, 8, 15], fov: 75 }}
+        camera={{ position: [0, 6, 12], fov: 75 }}
         style={{ background: '#111' }}
       >
+        {/* Lighting */}
         <ambientLight intensity={0.3} />
-        <directionalLight position={[10, 10, 5]} intensity={0.8} />
+        <directionalLight position={[10, 10, 5]} intensity={0.6} />
+        <pointLight position={[0, 6, 0]} intensity={0.3} />
         
-        {/* Simple cars instead of complex ones */}
-        <mesh position={[-6, 0, -2]} onClick={() => onCarClick(projects[0])}>
-          <boxGeometry args={[4, 1, 2]} />
-          <meshStandardMaterial color={projects[0].color} />
-        </mesh>
+        {/* Environment */}
+        {sceneMode === 'garage' && <GarageEnvironment />}
         
-        <mesh position={[0, 0, -2]} onClick={() => onCarClick(projects[1])}>
-          <boxGeometry args={[4, 1, 2]} />
-          <meshStandardMaterial color={projects[1].color} />
-        </mesh>
+        {/* Cars */}
+        {sceneMode === 'simple' ? (
+          // Simple boxes
+          <>
+            <mesh position={[-4, 0, -2]} onClick={() => onCarClick(projects[0])}>
+              <boxGeometry args={[3, 1, 2]} />
+              <meshStandardMaterial color={projects[0].color} />
+            </mesh>
+            <mesh position={[0, 0, -2]} onClick={() => onCarClick(projects[1])}>
+              <boxGeometry args={[3, 1, 2]} />
+              <meshStandardMaterial color={projects[1].color} />
+            </mesh>
+            <mesh position={[4, 0, -2]} onClick={() => onCarClick(projects[2])}>
+              <boxGeometry args={[3, 1, 2]} />
+              <meshStandardMaterial color={projects[2].color} />
+            </mesh>
+          </>
+        ) : (
+          // Car models
+          <>
+            <SimpleCar 
+              position={[-4, 0, -2]} 
+              color={projects[0].color} 
+              project={projects[0]} 
+              onClick={onCarClick} 
+            />
+            <SimpleCar 
+              position={[0, 0, -2]} 
+              color={projects[1].color} 
+              project={projects[1]} 
+              onClick={onCarClick} 
+            />
+            <SimpleCar 
+              position={[4, 0, -2]} 
+              color={projects[2].color} 
+              project={projects[2]} 
+              onClick={onCarClick} 
+            />
+          </>
+        )}
         
-        <mesh position={[6, 0, -2]} onClick={() => onCarClick(projects[2])}>
-          <boxGeometry args={[4, 1, 2]} />
-          <meshStandardMaterial color={projects[2].color} />
-        </mesh>
-        
-        {/* Simple floor */}
-        <mesh position={[0, -1, 0]}>
-          <boxGeometry args={[20, 0.1, 10]} />
-          <meshStandardMaterial color="#444" />
-        </mesh>
-        
-        <OrbitControls />
+        <OrbitControls 
+          maxPolarAngle={Math.PI / 2}
+          minDistance={3}
+          maxDistance={20}
+        />
       </Canvas>
       
       <div className="absolute bottom-4 left-4 text-white">
-        <p>Full Scene Mode - Click cars to view projects</p>
+        <p>🏎️ {sceneMode === 'garage' ? 'Garage Scene' : 'Simple Scene'} - Click cars to view projects</p>
+        <p>🖱️ Drag to rotate • Scroll to zoom</p>
       </div>
     </div>
   )

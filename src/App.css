@@ -48,6 +48,14 @@
   background-color: #ef4444 !important;
 }
 
+.bg-green-500 {
+  background-color: #10b981 !important;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
 .absolute {
   position: absolute;
 }
